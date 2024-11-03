@@ -1,163 +1,56 @@
 package it2e.deguma.gmss;
 
 
+import java.util.InputMismatchException;
 import java.util.Scanner; 
 
 public class IT2EDEGUMAGMSS {
-    static config conf = new config();
-    
-    public static void addMembers(){
-        Scanner sc = new Scanner(System.in);
-        
-        
-        System.out.print("Id : ");
-        int id = sc.nextInt();
-        System.out.print("Name: ");
-        String name = sc.next();
-        System.out.print("Payment: ");
-        String pay = sc.next();
-        System.out.print("Selected Plan: ");
-        String sp = sc.next();
-        System.out.print("Date and Time: ");
-        String date = sc.next();
-
-        String sql = "INSERT INTO members (m_id, m_name, m_payment, m_date_and_time, m_selectedplan) VALUES (?, ?, ?, ?, ?)";
-
-
-        conf.addRecord(sql, id, name, pay, sp, date);
-
-
-    }
-    
-    private void viewMembers(){
-        config conf = new config();
-        
-        String qry = "SELECT * FROM members";
-        String[] headers = {"ID", "Name", "Payment", "Date and Time", "Selected Plan"};
-        String[] column = {"m_id", "m_name", "m_payment", "m_date_and_time", "m_selectedplan"};
-
-        conf.viewRecords(qry, headers, column);
-        
-        
-        
-    }
-    
-    
-    public void updateMembers() {
-                 Scanner sc = new Scanner(System.in);
-                 config conf = new config();
-                 
-                 System.out.println("Id : ");
-                 String id = sc.next();               
-                 System.out.println("Name: ");
-                 String name = sc.next();
-                 System.out.println("Payment: ");
-                 String pay = sc.next();
-                 System.out.println("Date & Time: ");
-                 String dt = sc.next();
-                 System.out.println("Selected plan: ");
-                 String sp = sc.next();
-                
-                 
-                 String qry = "UPDATE members SET m_name = ?, m_payment = ?, m_date_and_time = ?, m_selectedplan = ? WHERE m_id = ?";
-                 
-                
-                 conf.updateRecord(qry, id, name, pay, dt, sp);
-             }
-             
-  
-    
-    public void deleteMembers(){
-                 Scanner sc = new Scanner(System.in);
-                 System.out.println("Enter ID to delete");
-                 int id = sc.nextInt();
-                 
-                 String qry = "DELETE FROM members WHERE m_id = ? ";
-                 config conf = new config();
-                 conf.deleteRecord(qry, id);
-                 
-             }
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        String response;
-
-        
-        do{
-                
-        System.out.println("1. ADD");
-        System.out.println("2. VIEW");
-        System.out.println("3. UPDATE");
-        System.out.println("4. DELETE");
-        System.out.println("5. EXIT");
-        
-        System.out.println("Enter action: ");
-        int action = sc.nextInt();
-        
-        
-        IT2EDEGUMAGMSS member = new IT2EDEGUMAGMSS();
-        
-        switch(action){
-            case 1:
-                member.addMembers();
-                break;
-                
-            case 2:
-                member.viewMembers();  
-                break;
-            case 3:
-                member.viewMembers();
-                member.updateMembers();
-              
-                break;
-            case 4:
-                member.viewMembers();
-                member.deleteMembers();
-                member.viewMembers();
-                
-                break;
-            case 5:
-                System.out.println("Existing.....");
-                break;
-            default:
-                System.out.println("Invalid action.Please try again.");
-                
-        }
-        System.out.println("Do you want to continue? (yes/no): ");
-        response = sc.next();
-    }while(response.equalsIgnoreCase("yes"));
-         System.out.println("Thank You, See you soones!");
-         
-         sc.close();
-    
-        }
-             
-                 
-                         
-                 
-
-
-    
-    
-    
-    
-          
      
-                   
-           
-           
-        }
+        member mem = new member();
         
+        int op = -1; 
         
-        
-    
+        do {
+            try {
+                System.out.println("\n------------------------------------------------");
+                System.out.println("        WELCOME TO GYM MEMBERSHIP SYSTEM      ");
+                System.out.println("------------------------------------------------");
+   
+
+                System.out.println("1. MEMBERS ");
+                System.out.println("2. EXIT ");
+
+                System.out.print("\nSelect an Option: ");
+                op = sc.nextInt();
+                sc.nextLine(); 
+
+                switch (op) {
+                    case 1:
+                        mem.mTransactions();
+                        break;
+
+                    case 2:
+                        System.out.println("Exiting....");
+                        break;
+
+                    default:
+                        System.out.println("Invalid Option.");
+                }
+
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                sc.nextLine();  
+                op = -1;  
+            }
+        } while (op != 2);
+
+        sc.close(); 
+    }
+
+}
 
 
-        
-        
-
-    
-      
-    
-    
     
 
