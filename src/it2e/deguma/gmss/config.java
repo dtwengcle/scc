@@ -6,24 +6,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-
 public class config {
+      
     
-    //Connection Method to SQLITE
-public static Connection connectDB() {
+    public static Connection connectDB() {
         Connection con = null;
         try {
-            Class.forName("org.sqlite.JDBC"); // Load the SQLite JDBC driver
-            con = DriverManager.getConnection("jdbc:sqlite:D:gmss.db"); // Establish connection
-        } catch (ClassNotFoundException | SQLException e) {
+            Class.forName("org.sqlite.JDBC");
+            con = DriverManager.getConnection("jdbc:sqlite:gmss.db");
+        } catch (Exception e) {
             System.out.println("Connection Failed: " + e);
         }
         return con;
     }
-
-
-public void addRecord(String sql, Object... values) {
-    try (Connection conn = config.connectDB(); // Use the connectDB method
+   
+    public void addRecord(String sql, Object... values) {
+        try (Connection conn = this.connectDB(); // Use the connectDB method
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
         // Loop through the values and set them in the prepared statement dynamically
@@ -50,71 +48,57 @@ public void addRecord(String sql, Object... values) {
         }
 
         pstmt.executeUpdate();
-        System.out.println("Record added successfully!\n");
+        System.out.println("Record added successfully!");
     } catch (SQLException e) {
         System.out.println("Error adding record: " + e.getMessage());
     }
 }
-
-
- // Dynamic view method to display records from any table
-    public void viewRecords(String sqlQuery, String[] columnHeaders, String[] columnNames) {
+   
+     // Dynamic view method to display records from any table
+    public void viewRecords(String sqlQuery, String[] Columnheaders, String[] columnNames) {
         // Check that columnHeaders and columnNames arrays are the same length
-        if (columnHeaders.length != columnNames.length) {
+        if (Columnheaders.length != columnNames.length) {
             System.out.println("Error: Mismatch between column headers and column names.");
             return;
         }
 
-         try (Connection conn = config.connectDB();
-            PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
-            ResultSet rs = pstmt.executeQuery();) {
-           
-            StringBuilder headerLine = new StringBuilder();
-            
-            int spacing = 20;
-            int lineLength = columnHeaders.length * (spacing + 3) + 1;
-            
-            for (int i = 0; i < lineLength; i++) {
-                 headerLine.append("-");
-            }
-            headerLine.append("\n| ");
+        try (Connection conn = this.connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sqlQuery);
+             ResultSet rs = pstmt.executeQuery()) {
 
-            for (String header : columnHeaders) {
-                headerLine.append(String.format("%-" + spacing + "s | ", header));
+            // Print the headers dynamically
+            StringBuilder headerLine = new StringBuilder();
+            headerLine.append("------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| ");
+            for (String header : Columnheaders) {
+                headerLine.append(String.format("%-20s | ", header)); // Adjust formatting as needed
             }
-            
-            headerLine.append("\n");
-            for (int i = 0; i < lineLength; i++) {
-                 headerLine.append("-");
-            }
+            headerLine.append("\n------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             System.out.println(headerLine.toString());
 
+            // Print the rows dynamically based on the provided column names
             while (rs.next()) {
                 StringBuilder row = new StringBuilder("| ");
                 for (String colName : columnNames) {
                     String value = rs.getString(colName);
-                    row.append(String.format("%-" + spacing + "s | ", value != null ? value : "")); 
+                    row.append(String.format("%-20s | ", value != null ? value : "")); // Adjust formatting
                 }
                 System.out.println(row.toString());
             }
-            for (int i = 0; i < lineLength; i++) {
-                 System.out.print("-");
-            }
-            System.out.println("");
-            
+            System.out.println("------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
         } catch (SQLException e) {
-            System.out.println("Error retrieving records: " + e.getMessage());  
+            System.out.println("Error retrieving records: " + e.getMessage());
         }
     }
     
     
-    //-----------------------------------------------
+//-----------------------------------------------
     // UPDATE METHOD
     //-----------------------------------------------
-    
+
     public void updateRecord(String sql, Object... values) {
-        try (Connection conn = config.connectDB(); // Use the connectDB method
+        try (Connection conn = this.connectDB(); // Use the connectDB method
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             // Loop through the values and set them in the prepared statement dynamically
@@ -145,12 +129,12 @@ public void addRecord(String sql, Object... values) {
         } catch (SQLException e) {
             System.out.println("Error updating record: " + e.getMessage());
         }
-    }
-    
-    
-// Add this method in the config class
-public void deleteRecord(String sql, Object... values) {
-    try (Connection conn = this.connectDB();
+    }    
+  
+  
+  // Add this method in the config class
+    public void deleteRecord(String sql, Object... values) {
+        try (Connection conn = this.connectDB();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
         // Loop through the values and set them in the prepared statement dynamically
@@ -164,12 +148,12 @@ public void deleteRecord(String sql, Object... values) {
 
         pstmt.executeUpdate();
         System.out.println("Record deleted successfully!");
-    } catch (SQLException e) {
+        } catch (SQLException e) {
         System.out.println("Error deleting record: " + e.getMessage());
+        }
     }
-}
-
-  //-----------------------------------------------
+    
+    //-----------------------------------------------
     // Helper Method for Setting PreparedStatement Values
     //-----------------------------------------------
     private void setPreparedStatementValues(PreparedStatement pstmt, Object... values) throws SQLException {
@@ -217,9 +201,4 @@ public void deleteRecord(String sql, Object... values) {
         return result;
     }
 
-    
-    
-    
-    
-   
 }

@@ -1,15 +1,12 @@
-
 package it2e.deguma.gmss;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class member {
-   
-    Scanner sc = new Scanner(System.in);
-    config conf = new config();
+    
+    private Scanner sc = new Scanner(System.in);
+    private config conf = new config();  // Single instance of config
     
     public void mTransactions() {
         int act;
@@ -17,18 +14,18 @@ public class member {
         do {
             try {
                 System.out.println("\n-----------------------------------------------");
-                System.out.println("       == Membership ==");
+                System.out.println("                 == Membership Panel ==            "); 
                 System.out.println("-----------------------------------------------");
                 
                 System.out.println("1. Add Member");
-                System.out.println("2. View Member");
+                System.out.println("2. View Members");
                 System.out.println("3. Update Member");
                 System.out.println("4. Delete Member");
                 System.out.println("5. Back to Main Menu");
 
                 System.out.print("\nSelect an option: ");
                 act = sc.nextInt();
-                sc.nextLine();
+                sc.nextLine();  // Consume the newline character
 
                 switch (act) {
                     case 1:
@@ -42,13 +39,13 @@ public class member {
                 
                     case 3:
                         viewMembers();
-                        updateMembers(); 
+                        updateMembers();
                         viewMembers();
                         break;
             
                     case 4:
                         viewMembers();
-                        deleteMembers(); 
+                        deleteMembers();
                         viewMembers();
                         break;
                 
@@ -57,107 +54,88 @@ public class member {
                         break;
         
                     default:
-                        System.out.println("Invalid Option.");
+                        System.out.println("Invalid Option. Please try again.");
                 }
         
             } catch (InputMismatchException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
-                sc.nextLine();
-                act = -1;
+                sc.nextLine();  // Clear invalid input
+                act = -1;  // Reset act to force a repeat
             }
         } while (act != 5);
     }
     
-
     private void addMembers() {
-      
-        Scanner sc = new Scanner(System.in);
-      
         System.out.print("Name: ");
-        String name = sc.next();
+        String name = sc.nextLine();
         System.out.print("Payment: ");
-        String pay = sc.next();
+        String pay = sc.nextLine();
         System.out.print("Selected Plan: ");
-        String sp = sc.next();
+        String sp = sc.nextLine();
         System.out.print("Date and Time: ");
-        String date = sc.next();
+        String date = sc.nextLine();
         System.out.print("Instructor: ");
-        String instructor = sc.next();
+        String instructor = sc.nextLine();
         System.out.print("Location: ");
-        String ln = sc.next();
+        String ln = sc.nextLine();
 
-        String sql = "INSERT INTO members (m_name, m_payment, m_dt, m_selectedplan) VALUES (?, ?, ?, ?)";
-
-
-        conf.addRecord(sql, name, pay, sp, date);
-          }
-          
+        String sql = "INSERT INTO tbl_membership (m_name, m_payment, m_dt, m_selectedplan, m_instructor, m_ln) VALUES (?, ?, ?, ?, ?, ?)";
+        conf.addRecord(sql, name, pay, date, sp, instructor, ln);
+        System.out.println("Member added successfully!");
+    }
     
-    public void viewMembers(){
-        System.out.println("\n---------------------------------------------------------------------------------------------");
-        System.out.println("                                   == MEMBER DETAILS ==             ");
+    public void viewMembers() {
+        String qry = "SELECT * FROM tbl_membership";
+        String[] columnHeaders = {"ID", "Name", "Payment", "Date and Time", "Selected Plan", "Instructor", "Location"};
+        String[] columnNames = {"m_id", "m_name", "m_payment", "m_dt", "m_selectedplan", "m_instructor", "m_ln"};
         
-       config conf = new config();
-        
-        String qry = "SELECT * FROM members";
-        String[] headers = {"ID", "Name", "Payment", "Date and Time", "Selected Plan"};
-        String[] column = {"m_id", "m_name", "m_payment", "m_dt", "m_selectedplan"};
-
-        conf.viewRecords(qry, headers, column);
-          }
+        conf.viewRecords(qry, columnHeaders, columnNames);
+    }
     
-    private void updateMembers(){
+    private void updateMembers() {
         System.out.print("Enter ID to Update: ");
         int id = sc.nextInt();
+        sc.nextLine();  // Consume the newline character
         
-        while(conf.getSingleValue("SELECT m_id FROM member WHERE m_id = ?",id)==0){
+        while(conf.getSingleValue("SELECT m_id FROM tbl_membership WHERE m_id = ?", id) == 0) {
             System.out.println("Selected ID doesn't exist! ");
-            System.out.print("Select member Id Again: ");
+            System.out.print("Select member ID Again: ");
             id = sc.nextInt();
-            sc.nextLine();
+            sc.nextLine(); 
         }
-                               
-                 System.out.println("Name: ");
-                 String name = sc.next();
-                 System.out.println("Payment: ");
-                 String pay = sc.next();
-                 System.out.println("Date & Time: ");
-                 String dt = sc.next();
-                 System.out.println("Selected plan: ");
-                 String sp = sc.next();
-                 System.out.println("Instructor: ");
-                 String instructor = sc.next();
-                 System.out.println("Location: ");
-                 String ln = sc.next();
-                
-                 
-                 String qry = "UPDATE members SET m_name = ?, m_payment = ?, m_dt = ?, m_selectedplan = ?, _instructor = ?, m_loactionWHERE m_id = ?";
-                   
-                
-                 conf.updateRecord(qry, id, name, pay, dt, sp);
-             }
+
+        System.out.print("Name: ");
+        String name = sc.nextLine();
+        System.out.print("Payment: ");
+        String pay = sc.nextLine();
+        System.out.print("Date & Time: ");
+        String dt = sc.nextLine();
+        System.out.print("Selected Plan: ");
+        String sp = sc.nextLine();
+        System.out.print("Instructor: ");
+        String instructor = sc.nextLine();
+        System.out.print("Location: ");
+        String ln = sc.nextLine();
+        
+        String qry = "UPDATE tbl_membership SET m_name = ?, m_payment = ?, m_dt = ?, m_selectedplan = ?, m_instructor = ?, m_location = ? WHERE m_id = ?";
+        conf.updateRecord(qry, name, pay, dt, sp, instructor, ln, id);
+        System.out.println("Member updated successfully!");
+    }
     
-    private void deleteMembers(){
+    private void deleteMembers() {
         System.out.print("Enter ID to Delete: ");
         int id = sc.nextInt();
+        sc.nextLine();  // Consume the newline character
         
-        while(conf.getSingleValue("SELECT m_id FROM members WHERE m_id = ?",id)==0){
+        while (conf.getSingleValue("SELECT m_id FROM tbl_membership WHERE m_id = ?", id) == 0) {
             System.out.println("Selected ID doesn't exist! ");
-            System.out.print("Select member Id Again: ");
+            System.out.print("Select member ID Again: ");
             id = sc.nextInt();
-            sc.nextLine();
+            sc.nextLine(); 
         }
         
-        String qry = "DELETE FROM members WHERE c_id = ?";
+        String qry = "DELETE FROM tbl_membership WHERE m_id = ?";
         conf.deleteRecord(qry, id);
-        
-        
-        
-        
-}
+        System.out.println("Member deleted successfully!");
     }
-
-        
-
-
-   
+}
